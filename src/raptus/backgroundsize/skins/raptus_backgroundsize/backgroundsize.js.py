@@ -18,8 +18,10 @@ if not selectors:
 
 return """
     (function($) {
-      $(document).ready(function() {
-        $(%s).each(function() {
+
+      function init(e) {
+        var container = $(this);
+        container.find(%s).each(function() {
           var header = $(this);
           var img = new Image();
           img.onload = function() {
@@ -55,14 +57,20 @@ return """
               'position': 'absolute',
               'top': 0,
               'left': 0,
-              'width': '100%',
-              'height': '100%',
+              'width': '100%%',
+              'height': '100%%',
               'overflow': 'hidden'
             }).append(img);
             header.prepend(wrapper).css('background', 'none');
           }
           img.src = header.css('background-image').replace(/url\(['"]([^'"]+)['"]\)/, '$1');
         });
+      }
+
+      $(document).ready(function(e) {
+        $.proxy(init, $('body'))(e);
+        $('.viewletmanager').on('viewlets.updated', init);
       });
+
     })(jQuery);
 """ % ', '.join(selectors)
